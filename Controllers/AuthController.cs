@@ -28,6 +28,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using MirrorQuickstart.Models;
 
 namespace MirrorQuickstart.Controllers
 {
@@ -36,6 +37,7 @@ namespace MirrorQuickstart.Controllers
 
         private static readonly String OAUTH2_REVOKE_ENDPOINT =
             "https://accounts.google.com/o/oauth2/revoke";
+        private GlassClassesDataContext db = new Models.GlassClassesDataContext();
 
         //
         // GET: /auth
@@ -93,9 +95,8 @@ namespace MirrorQuickstart.Controllers
 
             if (!String.IsNullOrEmpty(userId))
             {
-                StoredCredentialsDBContext db = new StoredCredentialsDBContext();
-                StoredCredentials sc =
-                    db.StoredCredentialSet.FirstOrDefault(x => x.UserId == userId);
+                StoredCredential sc =
+                    db.StoredCredentials.FirstOrDefault(x => x.UserId == userId);
 
                 if (sc != null)
                 {
@@ -106,7 +107,8 @@ namespace MirrorQuickstart.Controllers
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(builder.Uri);
                     request.GetResponse();
 
-                    db.StoredCredentialSet.Remove(sc);
+                    db.StoredCredentials.DeleteOnSubmit(sc);
+                    db.SubmitChanges();
                 }
                 Session.Remove("userId");
             }
@@ -128,7 +130,7 @@ namespace MirrorQuickstart.Controllers
                 {
                     Collection = "timeline",
                     UserToken = userId,
-                    CallbackUrl = Url.Action("notify", null, null, Request.Url.Scheme)
+                    CallbackUrl = Url.Action("notify", "notify", null, Request.Url.Scheme)
                 };
                 mirrorService.Subscriptions.Insert(subscription).Fetch();
 

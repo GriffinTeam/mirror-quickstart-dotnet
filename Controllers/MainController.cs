@@ -30,6 +30,7 @@ namespace MirrorQuickstart.Controllers
     public class MainController : AuthRequiredController
     {
         private delegate string Operation(MainController controller);
+        private static GlassClassesDataContext db = new Models.GlassClassesDataContext();
 
         /// <summary>
         /// Map of supported operations.
@@ -229,8 +230,7 @@ namespace MirrorQuickstart.Controllers
         /// <returns>Status message.</returns>
         private static String InsertItemAllUsers(MainController controller)
         {
-            StoredCredentialsDBContext db = new StoredCredentialsDBContext();
-            int userCount = db.StoredCredentialSet.Count();
+            int userCount = db.StoredCredentials.Count();
 
             if (userCount > 10)
             {
@@ -245,7 +245,7 @@ namespace MirrorQuickstart.Controllers
                     Notification = new NotificationConfig() { Level = "DEFAULT" }
                 };
 
-                foreach (StoredCredentials creds in db.StoredCredentialSet)
+                foreach (StoredCredential creds in db.StoredCredentials)
                 {
                     AuthorizationState state = new AuthorizationState()
                     {

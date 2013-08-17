@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="GlassClasses">
+  <DataContextMoniker Name="/GlassClassesDataContext" />
+  <nestedChildShapes>
+    <classShape Id="c68bc69d-9d78-4308-ba78-a8d0ca5dc6cc" absoluteBounds="3.625, 1.25, 2, 1.3862939453125">
+      <DataClassMoniker Name="/GlassClassesDataContext/StoredCredential" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5c5d9cd7-0c91-481d-b8d9-1654248a5857" absoluteBounds="3.64, 1.71, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

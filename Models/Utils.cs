@@ -23,6 +23,7 @@ namespace MirrorQuickstart.Models
 {
     public class Utils
     {
+        public static GlassClassesDataContext db = new GlassClassesDataContext();
 
         /// <summary>
         /// Retrieve an IAuthenticator instance using the provided state.
@@ -48,8 +49,7 @@ namespace MirrorQuickstart.Models
         /// <returns>Stored GoogleAccessProtectedResource if found, null otherwise.</returns>
         public static IAuthorizationState GetStoredCredentials(String userId)
         {
-            StoredCredentialsDBContext db = new StoredCredentialsDBContext();
-            StoredCredentials sc = db.StoredCredentialSet.FirstOrDefault(x => x.UserId == userId);
+            StoredCredential sc = db.StoredCredentials.FirstOrDefault(x => x.UserId == userId);
             if (sc != null)
             {
                 return new AuthorizationState()
@@ -68,8 +68,7 @@ namespace MirrorQuickstart.Models
         /// <param name="credentials">The OAuth 2.0 credentials to store.</param>
         public static void StoreCredentials(String userId, IAuthorizationState credentials)
         {
-            StoredCredentialsDBContext db = new StoredCredentialsDBContext();
-            StoredCredentials sc = db.StoredCredentialSet.FirstOrDefault(x => x.UserId == userId);
+            StoredCredential sc = db.StoredCredentials.FirstOrDefault(x => x.UserId == userId);
             if (sc != null)
             {
                 sc.AccessToken = credentials.AccessToken;
@@ -77,14 +76,14 @@ namespace MirrorQuickstart.Models
             }
             else
             {
-                db.StoredCredentialSet.Add(new StoredCredentials
+                db.StoredCredentials.InsertOnSubmit(new StoredCredential
                 {
                     UserId = userId,
                     AccessToken = credentials.AccessToken,
                     RefreshToken = credentials.RefreshToken
                 });
             }
-            db.SaveChanges();
+            db.SubmitChanges();
         }
 
 
