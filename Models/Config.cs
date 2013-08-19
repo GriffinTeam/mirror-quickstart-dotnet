@@ -43,7 +43,7 @@ namespace MirrorQuickstart.Models
         /// <summary>
         /// The Redirect URI of your project.
         /// </summary>
-        public static readonly string REDIRECT_URI = "https://www.auburnalabama.org/glass/oauth2callback";
-        //public static readonly string REDIRECT_URI = "https://localhost/glass/oauth2callback";
+        //public static readonly string REDIRECT_URI = "https://www.auburnalabama.org/glass/oauth2callback";
+        public static readonly string REDIRECT_URI = "https://localhost/glass/oauth2callback";
     }
 }

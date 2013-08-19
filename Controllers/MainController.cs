@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace MirrorQuickstart.Controllers
 {
@@ -52,7 +53,6 @@ namespace MirrorQuickstart.Controllers
 
         //
         // GET: /Root/
-
         public ActionResult Index()
         {
             if (!Initialize())
@@ -195,7 +195,43 @@ namespace MirrorQuickstart.Controllers
             }
             else
             {
-                controller.Service.Timeline.Insert(item).Fetch();
+                //controller.Service.Timeline.Insert(item).Fetch();
+                //Video sending example
+                //byte[] byteArray = System.Text.Encoding.ASCII.GetBytes("https://dl.dropboxusercontent.com/u/6562706/sweetie-wobbly-cat-720p.mp4");
+                //MemoryStream stream = new MemoryStream(byteArray);
+                //controller.Service.Timeline.Insert(item, (Stream)stream, "video/vnd.google-glass.stream-url").Upload();
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/r/awww.json");
+                RedditResp myojb;
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        var objText = reader.ReadToEnd();
+                        myojb = (RedditResp)js.Deserialize(objText, typeof(RedditResp));
+                    }
+                }
+                Guid guid = new Guid();
+                int cnt = 0;
+                foreach (RedditChildrenObj children in myojb.data.children)
+                {
+                    if (children.data.url.Substring(children.data.url.Length - 3) == "jpg")
+                    {
+                        item = new TimelineItem()
+                        {
+                            Text = children.data.title,
+                            Html = "<article class=\"photo\">\n  <img src=\"" + children.data.url + "\" width=\"100%\" height=\"100%\">\n  <div class=\"photo-overlay\"/>\n  <section>\n    <p class=\"text-auto-size\">" + children.data.title + "</p>\n  </section>\n</article>\n",
+                            BundleId = guid.ToString(),
+                            Notification = new NotificationConfig() { Level = "DEFAULT" }
+                        };
+
+                        controller.Service.Timeline.Insert(item).Fetch();
+                        cnt++;
+                    }
+
+                    if (cnt > 5) break;
+                }
             }
 
             return "A timeline item has been inserted.";

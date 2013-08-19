@@ -19,6 +19,7 @@ using Google.Apis.Services;
 using MirrorQuickstart.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Web.Mvc;
 
@@ -90,6 +91,24 @@ namespace MirrorQuickstart.Controllers
                     service.Timeline.Update(item, item.Id).Fetch();
                     // Only handle the first successful action.
                     break;
+                }
+                else if (action.Type == "REPLY")
+                {
+                    TimelineItem item = service.Timeline.Get(notification.ItemId).Fetch();
+
+                    item.Text = "You asked: " + item.Text;
+                    item.Notification = new NotificationConfig() { Level = "DEFAULT" };
+
+                    TimelineItem video = new TimelineItem()
+                    {
+                        Text = "Found your video",
+                        Notification = new NotificationConfig() { Level = "DEFAULT" }
+                    };
+
+                    HttpWebRequest request = WebRequest.Create("https://dl.dropboxusercontent.com/u/6562706/sweetie-wobbly-cat-720p.mp4") as HttpWebRequest;
+                    HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                    Stream stream = response.GetResponseStream();
+                    service.Timeline.Insert(video, stream, "video/H.263").Upload();
                 }
                 else
                 {
